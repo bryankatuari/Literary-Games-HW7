@@ -1,24 +1,52 @@
 // Initialize player obedience level
 VAR obedienceLevel = 0
--> start
-// The beginning of the story
-=== start ===
 You wake up in a dimly lit room, with no memory of how you got there. 
-"The way out is through the blue door," the narrator intones.
+"Steven woke up in a daze, unsure of where he was." a narrator intones, "He was faced with two doors, he decided to open the blue door."
+-> start
+
+// The beginning room
+=== start ===
 *   [Go through the blue door] -> obey
 *   [Go through the red door instead] -> disobey
+*   [Stay put] -> ignore
+* {ignore} [Stay put] -> ignore_more
+* {ignore_more} [Dilly dally] -> dilly_dally
+* {dilly_dally} [Wait for the bear] -> bear
+
+// Player ignores the narrator
+=== ignore ===
+"Steven pondered for a bit, chained by the shackles of choice, not knowing that they both lead to the same room. He eventually decided to go through the blue door."
+-> start
+
+=== ignore_more ===
+{decrease_obedience()}
+"Steven, still stunned by choice as a result of being a stupid dumb boy, was unaware that if he were to dilly dally any longer, a bear would appear and eat him."
+-> start
+
+=== dilly_dally ===
+{decrease_obedience()}
+"Steven. A bear will come and eat you. I'm not joking, this isn't a bluff or empty threat. Go through the blue door."
+-> start
+
+=== bear ===
+{decrease_obedience()}
+As you stand idly in the empty room in defiance of the narrator, the red door slowly opens, revealing a deadly grizzly bear.
+Only that it's just a cutout of a grizzly bear with the number 1015 written on it.
+"C'mon Steven, let's just move on.", the narrator says in defeat.
+-> start
 
 // Player obeys the narrator
 === obey ===
 {increase_obedience()}
-The blue door leads you to a serene garden. "Well done," the narrator says. "Now, find the silver key."
-*   [Search the fountain] -> fountain
-*   [Search the old oak tree] -> oak_tree
+{once: "Steven arrived at a long room full of numbered drawers and a locked door at the end. He would have to check every single drawer to find the key. If only he knew that drawer number 56 had the key."}
+*   [Search drawer 56] -> drawer_56
+*   [Search a random drawer] -> random_drawer
+*   {bear} [Look for drawer 1015] -> drawer_1015
 
 // Player disobeys the narrator
 === disobey ===
 {decrease_obedience()}
-The red door leads to a dark, winding corridor. "Curious choice," the narrator remarks dryly.
+The red door leads to a dark, winding corridor. "Curious choice," the narrator whispers to himself dryly. "It seems that Steven made a mistake and went through the blue door, he turned back and returned to go through the blue door."
 *   [Return to the blue door] -> obey
 *   [Continue down the corridor] -> deep_corridor
 
@@ -31,59 +59,47 @@ The red door leads to a dark, winding corridor. "Curious choice," the narrator r
 ~ obedienceLevel = obedienceLevel - 1
 
 // Searching the fountain
-=== fountain ===
-You find nothing but cold water. "Not everything is as it seems," the narrator muses.
-*   [Return to the garden] -> garden
+=== drawer_56 ===
+{increase_obedience()}
+You check drawer number 56 and find a key. "By sheer miracle Steven found the key in drawer number 56.", the narrator exclaims, "Having found the key, Steven moved through the locked door."
+*   [Open the locked door] -> sad_room
 
 // Searching the old oak tree
-=== oak_tree ===
-Nested among the roots, you find the silver key. "Ah, clever," the narrator approves.
--> key_found
+=== random_drawer ===
+{decrease_obedience()}
+You open a random drawer. Only to find nothing in it. "Steven tried opening a random drawer, to no avail. Maybe there's a chance he opens drawer 56. The one with the key."
+-> obey
 
-=== key_found ===
-hi
+=== drawer_1015 ===
+You walk around the massive room filled with labelled drawers until you spot drawer number 1015. You open it to find a silver key.
+-> obey
+
 -> END
 // Deep into the corridor
 === deep_corridor ===
-The corridor ends at a locked door. "You seem lost," the narrator observes.
-*   [Search for a key] -> search_corridor
-*   [Go back] -> garden
-
-// Searching the corridor
-=== search_corridor ===
-You find a golden key, but it doesn't fit the lock. "Not all that glitters is gold," the narrator quips.
-*   [Head back] -> garden
+The corridor ends at a door. You go through it. "Steven had an air about him, an air of someone who was incapable of following basic instructions. If only he knew that both doors led to the same room and his defiance was utterly pathetic and useless.
+-> obey
 
 // Back to the garden with or without the key
-=== garden ===
-You're back in the garden. The silver key gleams in the moonlight, should you have it.
-*   {obedienceLevel > 0} [Use the silver key] -> escape
-*   [Continue exploring] -> explore_garden
-
-// Exploring the garden further
-=== explore_garden ===
-You discover a hidden path leading to a secret garden. "You do enjoy going off the beaten path," the narrator comments.
-*   [Follow the path] -> secret_garden
-*   [Return to the main garden] -> garden
-
-// Secret garden discovery
-=== secret_garden ===
-The secret garden is breathtaking, with an air of magic. "There's more to this place than meets the eye," the narrator whispers.
-*   [Stay and explore] -> stay_in_secret_garden
-*   [Go back] -> garden
-
-// Staying in the secret garden
-=== stay_in_secret_garden ===
-As you explore, you find a mysterious, glowing orb. "You've found something truly special," the narrator says, a note of respect in their voice.
--> end_game
+=== sad_room ===
+You arrive in a bleak and soulless room. With naught but a locked door and a sign that says "Congratulations". "Congratulations, you have won the game Steven! Now you get to sit here and relish in your achievement, reminiscing about your grand adventure.", the narrator exclaims as a pathetic amount of confetti pops out.
+    {obedienceLevel < -2} -> final_straw
+*   {drawer_1015} -> escape
+*   [Sit here for all eternity] -> END
 
 // Escape the garden
 === escape ===
-Using the silver key, you unlock a gate hidden amongst the foliage and step through. "Freedom is yours, at last," the narrator says, a hint of sadness in their voice. "Or is it just another beginning?"
--> end_game
-
-// The end of the game
-=== end_game ===
-The world fades to black. "Thank you for playing," the narrator concludes. "Until next time."
+You walk towards the locked door and try your silver key on it. "Wait Steven where are you going?", the narrator asks in confusion as you turn the key and open the door. You walk away from all the instructions, rooms, disembodied voices and towards... freedom?
 -> END
 
+=== final_straw ===
+You suddenly find yourself in a completely new room, with a green door to your left and purple door to your right. "Okay Steven, I've had it with you, this is your final chance to make it up to me.", the narrator sighed, "Steven walked through the purple door."
+* [Go through the green door] -> prison
+* [Go through the pruple door] "Thank you Steven. Now let's just get on with it. -> sad_room
+
+=== prison ===
+You walked up to the green door and opened it, walking through into the next room. You notice the door behind you disappeared, revealing a room with nothing but 4 walls, a ceiling and a floor. 
+
+"I tried Steven, I really did."
+
++ [Wait] -> prison
